@@ -1,0 +1,81 @@
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+*.o
+*.lo
+*.la
+*.al
+*.pyc
+*.pyo
+__pycache__/
+*.so
+*.a
+*.dll
+*.lib
+*.dylib
+*.exe
+*.obj
+*.out
+*.app
+*.ipa
+*.apk
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+*.bak
+*.tmp
+
+# IDE and Editor files
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.nvram
+
+# Dependency directories
+node_modules/
+vendor/
+venv/
+env/
+
+# Package manager files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Temporary files
+*~
+#*#
+.#*
+.fuse_hidden*
+.nfs*
+
+# Configuration files (often sensitive or machine-specific)
+.env
+.env.*.local
+.flaskenv
+config.local.js
+config.production.js
+
+# Test and coverage reports
+coverage/
+.nyc_output/
+*.gcno
+*.gcda
+*.gcov
+.coverage
+
+# Miscellaneous
+upload/
+storage/
