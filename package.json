@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "yarn start",
     "dev": "ts-node-dev src/server.ts --env-file .env",
-    "render-build": "npm install --include=dev && npm run build",
+    "render-build": "npm install && npm run build",
     "typeorm": "ts-node-dev -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
   "devDependencies": {
