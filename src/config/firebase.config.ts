@@ -23,7 +23,7 @@ export const initializeFirebase = () => {
     const credentialsValue = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
     // Tentar parsear como JSON primeiro (para produção/Render)
-    try {
+    /*  try {
       console.log("Tentando parsear como JSON...");
       const serviceAccount = JSON.parse(credentialsValue);
       credential = admin.credential.cert(serviceAccount);
@@ -36,10 +36,10 @@ export const initializeFirebase = () => {
       const serviceAccount = require(absolutePath);
       credential = admin.credential.cert(serviceAccount);
       console.log("✓ Usando credenciais do arquivo");
-    }
+    } */
 
     admin.initializeApp({
-      credential: credential,
+      credential: admin.credential.cert(credentialsValue),
     });
 
     db = admin.firestore();
