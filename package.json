@@ -6,7 +6,7 @@
     "build": "tsc",
     "start": "node dist/server.js",
     "dev": "ts-node-dev src/server.ts --env-file .env",
-    "render-build": "npm install && npm run build",
+    "render-build": "pnpm install --include=dev && pnpm run build",
     "typeorm": "ts-node-dev -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
   },
   "devDependencies": {
