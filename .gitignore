@@ -68,6 +68,12 @@ package-lock.json
 config.local.js
 config.production.js
 
+# Firebase credentials (IMPORTANT: Never commit these!)
+serviceAccountKey.json
+firebase-adminsdk-*.json
+*-firebase-adminsdk-*.json
+firebase-config.json
+
 # Test and coverage reports
 coverage/
 .nyc_output/
