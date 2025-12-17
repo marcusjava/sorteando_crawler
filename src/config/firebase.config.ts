@@ -10,25 +10,47 @@ export const initializeFirebase = () => {
   }
 
   try {
-    const serviceAccountPath = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-
     console.log("Inicializando Firebase Admin...");
-    console.log("GOOGLE_APPLICATION_CREDENTIALS:", serviceAccountPath);
+    console.log("Ambiente:", process.env.NODE_ENV || "development");
 
-    if (!serviceAccountPath) {
+    let credential;
+
+    // Tentar usar FIREBASE_SERVICE_ACCOUNT (JSON direto - para produção/Render)
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+      console.log("Usando FIREBASE_SERVICE_ACCOUNT (JSON direto)");
+      const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+      credential = admin.credential.cert(serviceAccount);
+    }
+    // Tentar usar GOOGLE_APPLICATION_CREDENTIALS (caminho do arquivo - para desenvolvimento)
+    else if (process.env.GOOGLE_APPLICATION_CREDENTIALS) {
+      console.log("Usando GOOGLE_APPLICATION_CREDENTIALS (arquivo)");
+      const absolutePath = path.resolve(
+        process.env.GOOGLE_APPLICATION_CREDENTIALS
+      );
+      console.log("Caminho absoluto:", absolutePath);
+      const serviceAccount = require(absolutePath);
+      credential = admin.credential.cert(serviceAccount);
+    }
+    // Tentar credenciais individuais (alternativa)
+    else if (
+      process.env.FIREBASE_PROJECT_ID &&
+      process.env.FIREBASE_CLIENT_EMAIL &&
+      process.env.FIREBASE_PRIVATE_KEY
+    ) {
+      console.log("Usando credenciais individuais");
+      credential = admin.credential.cert({
+        projectId: process.env.FIREBASE_PROJECT_ID,
+        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+        privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+      });
+    } else {
       throw new Error(
-        "GOOGLE_APPLICATION_CREDENTIALS não está definido no .env"
+        "Nenhuma credencial do Firebase encontrada. Configure FIREBASE_SERVICE_ACCOUNT, GOOGLE_APPLICATION_CREDENTIALS ou credenciais individuais."
       );
     }
 
-    // Resolver caminho relativo para absoluto
-    const absolutePath = path.resolve(serviceAccountPath);
-    console.log("Caminho absoluto:", absolutePath);
-
-    const serviceAccount = require(absolutePath);
-
     admin.initializeApp({
-      credential: admin.credential.cert(serviceAccount),
+      credential: credential,
     });
 
     db = admin.firestore();
@@ -38,7 +60,7 @@ export const initializeFirebase = () => {
   } catch (error) {
     console.error("Erro ao inicializar Firebase Admin:", error);
     console.log(
-      "Verifique se GOOGLE_APPLICATION_CREDENTIALS está configurado no .env"
+      "Verifique as variáveis de ambiente do Firebase no .env ou Render"
     );
     // @ts-ignore
     db = null;
