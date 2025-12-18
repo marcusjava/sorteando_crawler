@@ -22,10 +22,10 @@ export const initializeFirebase = () => {
     let credential;
     let serviceAccount: any;
     const credentialsValue = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-    const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
+    const serviceAccountKey = process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
     if (!serviceAccountKey) {
-      throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY não configurada");
+      throw new Error("GOOGLE_APPLICATION_CREDENTIALS não configurada");
     }
 
     // Detectar o tipo de configuração
