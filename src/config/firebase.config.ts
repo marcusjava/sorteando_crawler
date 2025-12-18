@@ -21,11 +21,14 @@ export const initializeFirebase = () => {
 
     let credential;
     let serviceAccount: any;
-    const credentialsValue = process.env.GOOGLE_APPLICATION_CREDENTIALS;
-    const serviceAccountKey = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    const serviceAccountKey =
+      process.env.FIREBASE_SERVICE_ACCOUNT_KEY ||
+      process.env.GOOGLE_APPLICATION_CREDENTIALS;
 
     if (!serviceAccountKey) {
-      throw new Error("GOOGLE_APPLICATION_CREDENTIALS não configurada");
+      throw new Error(
+        "FIREBASE_SERVICE_ACCOUNT_KEY ou GOOGLE_APPLICATION_CREDENTIALS não configurada"
+      );
     }
 
     // Detectar o tipo de configuração
@@ -52,9 +55,25 @@ export const initializeFirebase = () => {
       console.log("✓ Service account decodificada de base64");
     }
 
-    admin.initializeApp({
+    // Configuração do Firebase Admin
+    const firebaseConfig: admin.AppOptions = {
       credential: admin.credential.cert(serviceAccount),
-    });
+    };
+
+    // Adicionar databaseURL se estiver configurado
+    if (process.env.FIREBASE_DATABASE_URL) {
+      firebaseConfig.databaseURL = process.env.FIREBASE_DATABASE_URL;
+      console.log("✓ Firebase Realtime Database URL configurada");
+    } else {
+      // Usar URL padrão baseada no project_id
+      const projectId = serviceAccount.project_id;
+      firebaseConfig.databaseURL = `https://${projectId}-default-rtdb.firebaseio.com`;
+      console.log(
+        `✓ Usando URL padrão do Realtime Database: ${firebaseConfig.databaseURL}`
+      );
+    }
+
+    admin.initializeApp(firebaseConfig);
 
     db = admin.firestore();
     firebaseInitialized = true;

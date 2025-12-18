@@ -4,6 +4,8 @@ export interface Local {
   endereco: string;
   logo: string;
   responsavel: string;
+  latitude: number;
+  longitude: number;
 }
 
 export interface LocationResponse {
