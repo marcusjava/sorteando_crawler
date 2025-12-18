@@ -20,26 +20,40 @@ export const initializeFirebase = () => {
     }
 
     let credential;
+    let serviceAccount: any;
     const credentialsValue = process.env.GOOGLE_APPLICATION_CREDENTIALS;
+    const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
-    // Tentar parsear como JSON primeiro (para produção/Render)
-    /*  try {
-      console.log("Tentando parsear como JSON...");
-      const serviceAccount = JSON.parse(credentialsValue);
-      credential = admin.credential.cert(serviceAccount);
-      console.log("✓ Usando credenciais do JSON direto");
-    } catch (jsonError) {
-      // Se falhar, tratar como caminho de arquivo (para desenvolvimento local)
-      console.log("JSON parse falhou, tratando como caminho de arquivo...");
-      const absolutePath = path.resolve(credentialsValue);
-      console.log("Caminho absoluto:", absolutePath);
-      const serviceAccount = require(absolutePath);
-      credential = admin.credential.cert(serviceAccount);
-      console.log("✓ Usando credenciais do arquivo");
-    } */
+    if (!serviceAccountKey) {
+      throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY não configurada");
+    }
+
+    // Detectar o tipo de configuração
+    if (
+      serviceAccountKey.startsWith("./") ||
+      serviceAccountKey.startsWith("/")
+    ) {
+      // Caminho de arquivo (ambiente local)
+      const fs = require("fs");
+      const path = require("path");
+      const filePath = path.resolve(serviceAccountKey);
+      serviceAccount = JSON.parse(fs.readFileSync(filePath, "utf-8"));
+      console.log("✓ Service account carregada do arquivo:", filePath);
+    } else if (serviceAccountKey.startsWith("{")) {
+      // JSON direto
+      serviceAccount = JSON.parse(serviceAccountKey);
+      console.log("✓ Service account carregada diretamente do JSON");
+    } else {
+      // Base64 encoded
+      const decodedKey = Buffer.from(serviceAccountKey, "base64").toString(
+        "utf-8"
+      );
+      serviceAccount = JSON.parse(decodedKey);
+      console.log("✓ Service account decodificada de base64");
+    }
 
     admin.initializeApp({
-      credential: admin.credential.cert(credentialsValue),
+      credential: admin.credential.cert(serviceAccount),
     });
 
     db = admin.firestore();
